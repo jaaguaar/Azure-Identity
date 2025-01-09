@@ -76,4 +76,4 @@ jobs:
           az containerapp update \
             --name $CONTAINER_APP_NAME \
             --resource-group $RESOURCE_GROUP \
-            --image $ACR_NAME.azurecr.io/mi-application:latest
+            --image $ACR_NAME.azurecr.io/mi-application:${{ env.VERSION }}
