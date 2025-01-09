@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+      {
+        "type": "Microsoft.App/containerApps",
+        "apiVersion": "2024-02-02-preview",
+        "name": "ca-tt-chat-test2",
+        "location": "polandcentral",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "/subscriptions/06ca04e5-37d0-4e54-9fb1-dce876a71866/resourcegroups/rg-tt-chat-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-tt-chat-test": {}
+          }
+        },
+        "properties": {
+          "managedEnvironmentId": "/subscriptions/06ca04e5-37d0-4e54-9fb1-dce876a71866/resourceGroups/rg-tt-chat-test/providers/Microsoft.App/managedEnvironments/cae-tt-chat-test",
+          "configuration": {
+            "secrets": [
+              {
+                "name": "managed-identity-client-id",
+                "keyVaultUrl": "https://kv-tt-chat-test.vault.azure.net/secrets/MANAGED-IDENTITY-CLIENT-ID",
+                "identity": "/subscriptions/06ca04e5-37d0-4e54-9fb1-dce876a71866/resourcegroups/rg-tt-chat-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-tt-chat-test"
+              }
+            ],
+            "ingress": {
+              "external": true,
+              "targetPort": 3000,
+              "transport": "Tcp",
+              "traffic": [
+                {
+                  "weight": 100,
+                  "latestRevision": true
+                }
+              ]
+            },
+            "registries": [
+              {
+                "server": "acrttchatcore.azurecr.io",
+                "identity": "/subscriptions/06ca04e5-37d0-4e54-9fb1-dce876a71866/resourcegroups/rg-tt-chat-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-tt-chat-test"
+              }
+            ]
+          },
+          "template": {
+            "containers": [
+              {
+                "image": "acrttchatcore.azurecr.io/chat:dev.5",
+                "name": "ca-tt-chat-test2",
+                "env": [
+                  {
+                    "name": "NODE_ENV",
+                    "secretRef": "node-env"
+                  },
+                  {
+                    "name": "PORT",
+                    "secretRef": "port"
+                  }
+                ],
+                "resources": {
+                  "cpu": 0.5,
+                  "memory": "1Gi"
+                }
+              }
+            ],
+            "scale": {
+              "minReplicas": 1,
+              "maxReplicas": 2
+            },
+            "volumes": [
+              {
+                "name": "chat-data",
+                "storageType": "AzureFile",
+                "storageName": "chat-data"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+  
