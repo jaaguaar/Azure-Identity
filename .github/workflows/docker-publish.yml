@@ -1,0 +1,56 @@
+name: Build and Publish Docker Image to Azure ACR
+
+on:
+    push:
+      branches:
+        - main  # Виконується при пушах у гілку main
+    workflow_dispatch:  # Дозволяє запуск вручну
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ACR_NAME: ${{ secrets.AZURE_ACR_NAME }} # Назва реєстру ACR (без .azurecr.io)
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Завантаження коду з репозиторію
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Увійти в Azure через OIDC
+      - name: Log in to Azure using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # 3. Логін до Azure Container Registry
+      - name: Log in to Azure Container Registry
+        run: az acr login --name $ACR_NAME
+
+      # 4. Автоматизація версій
+      - name: Generate Docker image version
+        id: version
+        run: echo "VERSION=v1.${{ github.run_number }}" >> $GITHUB_ENV
+
+      # 5. Побудувати Docker-образи з тегами latest і версією
+      - name: Build Docker images
+        run: |
+          docker build -t $ACR_NAME.azurecr.io/your-app-name:latest .
+          docker tag $ACR_NAME.azurecr.io/your-app-name:latest $ACR_NAME.azurecr.io/your-app-name:${{ env.VERSION }}
+
+      # 6. Завантажити Docker-образи в Azure Container Registry
+      - name: Push Docker images to ACR
+        run: |
+          docker push $ACR_NAME.azurecr.io/your-app-name:latest
+          docker push $ACR_NAME.azurecr.io/your-app-name:${{ env.VERSION }}
+
+      # 7. Перевірка завантажених образів (опціонально)
+      - name: List images in ACR (optional)
+        run: az acr repository show-tags --name $ACR_NAME --repository your-app-name
