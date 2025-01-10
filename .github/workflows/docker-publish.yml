@@ -14,6 +14,7 @@ env:
   ACR_NAME: ${{ secrets.AZURE_ACR_NAME }} # Назва реєстру ACR (без .azurecr.io)
   CONTAINER_APP_NAME: mi-application # Назва Azure Container App
   RESOURCE_GROUP: rg-tt-chat-test # Назва групи ресурсів у Azure
+  VERSION: v1.${{ github.run_number }}
 
 jobs:
   build-and-push:
@@ -36,24 +37,19 @@ jobs:
       - name: Log in to Azure Container Registry
         run: az acr login --name $ACR_NAME
 
-      # 4. Автоматизація версій
-      - name: Generate Docker image version
-        id: version
-        run: echo "VERSION=v1.${{ github.run_number }}" >> $GITHUB_ENV
-
-      # 5. Побудувати Docker-образи з тегами latest і версією
+      # 4. Побудувати Docker-образи з тегами latest і версією
       - name: Build Docker images
         run: |
           docker build -t $ACR_NAME.azurecr.io/mi-application:latest .
-          docker tag $ACR_NAME.azurecr.io/mi-application:latest $ACR_NAME.azurecr.io/mi-application:${{ env.VERSION }}
+          docker tag $ACR_NAME.azurecr.io/mi-application:latest $ACR_NAME.azurecr.io/mi-application:$VERSION
 
-      # 6. Завантажити Docker-образи в Azure Container Registry
+      # 5. Завантажити Docker-образи в Azure Container Registry
       - name: Push Docker images to ACR
         run: |
           docker push $ACR_NAME.azurecr.io/mi-application:latest
-          docker push $ACR_NAME.azurecr.io/mi-application:${{ env.VERSION }}
+          docker push $ACR_NAME.azurecr.io/mi-application:$VERSION
 
-      # 7. Перевірка завантажених образів (опціонально)
+      # 6. Перевірка завантажених образів (опціонально)
       - name: List images in ACR (optional)
         run: az acr repository show-tags --name $ACR_NAME --repository mi-application
 
@@ -76,4 +72,4 @@ jobs:
           az containerapp update \
             --name $CONTAINER_APP_NAME \
             --resource-group $RESOURCE_GROUP \
-            --image $ACR_NAME.azurecr.io/mi-application:${{ env.VERSION }}
+            --image $ACR_NAME.azurecr.io/mi-application:$VERSION
