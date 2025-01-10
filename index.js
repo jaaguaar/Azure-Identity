@@ -17,7 +17,7 @@ import { DataSource } from 'typeorm';
     });
 
     const tokenResponse = await credential.getToken(
-      'https://ossrdbms-aad.database.windows.net/.default'
+      'https://ossrdbms-aad.database.windows.net/'
     );
     if (!tokenResponse || !tokenResponse.token) {
       throw new Error('Failed to acquire access token.');
@@ -41,7 +41,7 @@ import { DataSource } from 'typeorm';
       extra: {
         type: 'azure-active-directory-msi-vm',
         options: {
-          clientId: cliendId,
+          clientId: process.env.AZURE_CLIENT_ID,
         },
       },
       //   ssl: { rejectUnauthorized: false }, // Enable SSL for Azure
