@@ -37,7 +37,13 @@ import { DataSource } from 'typeorm';
       host: host,
       database: database,
       username: username,
-      password: accessToken,
+      //   password: accessToken,
+      extra: {
+        type: 'azure-active-directory-msi-vm',
+        options: {
+          clientId: cliendId,
+        },
+      },
       //   ssl: { rejectUnauthorized: false }, // Enable SSL for Azure
       ssl: true,
       //   synchronize: true, // For development only, not recommended in production
