@@ -17,7 +17,7 @@ import { DataSource } from 'typeorm';
     });
 
     const tokenResponse = await credential.getToken(
-      'https://ossrdbms-aad.database.windows.net/'
+      'https://ossrdbms-aad.database.windows.net/.default'
     );
     if (!tokenResponse || !tokenResponse.token) {
       throw new Error('Failed to acquire access token.');
