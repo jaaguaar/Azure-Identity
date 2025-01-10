@@ -1,6 +1,6 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import { DataSource } from 'typeorm';
-import { Client } from 'pg';
+const pg = require('pg'); // Import pg using require
 
 (async () => {
   try {
@@ -48,7 +48,7 @@ import { Client } from 'pg';
       extra: {
         options: {
           connectionFactory: async () => {
-            const client = new Client({
+            const client = new pg.Client({
               host,
               database,
               user: username,
