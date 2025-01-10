@@ -1,6 +1,5 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import { DataSource } from 'typeorm';
-const pg = require('pg'); // Import pg using require
 
 (async () => {
   try {
@@ -18,7 +17,7 @@ const pg = require('pg'); // Import pg using require
     });
 
     const tokenResponse = await credential.getToken(
-      'https://ossrdbms-aad.database.windows.net/'
+      'https://ossrdbms-aad.database.windows.net/.default'
     );
     if (!tokenResponse || !tokenResponse.token) {
       throw new Error('Failed to acquire access token.');
@@ -38,28 +37,7 @@ const pg = require('pg'); // Import pg using require
       host: host,
       database: database,
       username: username,
-      //   password: accessToken,
-      //   extra: {
-      //     type: 'azure-active-directory-msi-vm',
-      //     options: {
-      //       clientId: process.env.AZURE_CLIENT_ID,
-      //     },
-      //   },
-      extra: {
-        options: {
-          connectionFactory: async () => {
-            const client = new pg.Client({
-              host,
-              database,
-              user: username,
-              password: accessToken,
-              ssl: true,
-            });
-            await client.connect();
-            return client;
-          },
-        },
-      },
+      password: accessToken,
       //   ssl: { rejectUnauthorized: false }, // Enable SSL for Azure
       ssl: true,
       //   synchronize: true, // For development only, not recommended in production
