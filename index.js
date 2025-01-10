@@ -1,5 +1,6 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import { DataSource } from 'typeorm';
+import { Client } from 'pg';
 
 (async () => {
   try {
@@ -38,10 +39,25 @@ import { DataSource } from 'typeorm';
       database: database,
       username: username,
       //   password: accessToken,
+      //   extra: {
+      //     type: 'azure-active-directory-msi-vm',
+      //     options: {
+      //       clientId: process.env.AZURE_CLIENT_ID,
+      //     },
+      //   },
       extra: {
-        type: 'azure-active-directory-msi-vm',
         options: {
-          clientId: process.env.AZURE_CLIENT_ID,
+          connectionFactory: async () => {
+            const client = new Client({
+              host,
+              database,
+              user: username,
+              password: accessToken,
+              ssl: true,
+            });
+            await client.connect();
+            return client;
+          },
         },
       },
       //   ssl: { rejectUnauthorized: false }, // Enable SSL for Azure
