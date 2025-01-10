@@ -17,7 +17,7 @@ import { DataSource } from 'typeorm';
     });
 
     const tokenResponse = await credential.getToken(
-      'https://ossrdbms-aad.database.windows.net/'
+      'https://ossrdbms-aad.database.windows.net/.default'
     );
     if (!tokenResponse || !tokenResponse.token) {
       throw new Error('Failed to acquire access token.');
@@ -29,7 +29,7 @@ import { DataSource } from 'typeorm';
     const host =
       process.env.PG_HOST || 'your-server-name.postgres.database.azure.com';
     const database = process.env.PG_DATABASE || 'your-database-name';
-    const user = process.env.PG_USER || '<identity_name>';
+    const username = process.env.PG_USER || '<identity_name>';
 
     // Initialize TypeORM DataSource
     const dataSource = new DataSource({
