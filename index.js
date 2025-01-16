@@ -28,10 +28,10 @@ import { BlobServiceClient } from '@azure/storage-blob';
 
     try {
       await containerClient.getProperties();
-      console.log(`Container ${containerName} exists.`);
+      console.log(`Container ${containerName} exists, and GitHub Action works!`);
     } catch (error) {
       if (error.statusCode === 404) {
-        console.log(`Container ${containerName} does not exist.`);
+        console.log(`Container ${containerName} does not exist, and GitHub Action works!`);
       } else {
         throw error;
       }
