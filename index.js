@@ -1,4 +1,3 @@
-import { DefaultAzureCredential } from "@azure/identity";
 import { BlobServiceClient } from "@azure/storage-blob";
 
 (async () => {
@@ -11,7 +10,7 @@ import { BlobServiceClient } from "@azure/storage-blob";
       );
     }
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-    if (!clientId) {
+    if (!connectionString) {
       throw new Error("Connection string not provided");
     }
 
