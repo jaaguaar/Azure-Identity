@@ -3,6 +3,15 @@ import { BlobServiceClient } from "@azure/storage-blob";
 
 (async () => {
   try {
+    // Отримання ідентифікатора User-Assigned Managed Identity з змінної середовища
+    const clientId = process.env.AZURE_CLIENT_ID;
+    if (!clientId) {
+      throw new Error(
+        "AZURE_CLIENT_ID is not set. Please set the environment variable with your Managed Identity Client ID."
+      );
+    }
+
+    // Отримання токена доступу за допомогою User-Assigned Managed Identity
     const credential = new DefaultAzureCredential();
 
     const accountName = "stttchattest";
