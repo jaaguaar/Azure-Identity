@@ -4,7 +4,7 @@ import { BlobServiceClient } from "@azure/storage-blob";
 (async () => {
   try {
     // Отримання ідентифікатора User-Assigned Managed Identity з змінної середовища
-    const clientId = "22f117cd-5e58-441a-8e01-be477784089f";
+    const clientId = process.env.AZURE_CLIENT_ID;
     if (!clientId) {
       throw new Error(
         "AZURE_CLIENT_ID is not set. Please set the environment variable with your Managed Identity Client ID."
@@ -42,6 +42,7 @@ import { BlobServiceClient } from "@azure/storage-blob";
       .upload(data, data.length)
       .catch((error) => {
         console.error(error);
+        throw error;
       });
     console.log(
       `Blob was uploaded successfully. requestId: ${uploadBlobResponse.requestId}`
