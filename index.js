@@ -12,16 +12,15 @@ import { BlobServiceClient } from "@azure/storage-blob";
     }
 
     // Отримання токена доступу за допомогою User-Assigned Managed Identity
-    const credential = new DefaultAzureCredential({
-      managedIdentityClientId: clientId,
-    });
+    // const credential = new DefaultAzureCredential({
+    //   managedIdentityClientId: clientId,
+    // });
 
-    const accountName = "stttchattest";
+    // const accountName = "stttchattest";
     const containerName = "tt-chat-data-storage";
 
-    const blobServiceClient = new BlobServiceClient(
-      `https://${accountName}.blob.core.windows.net`,
-      credential
+    const blobServiceClient = BlobServiceClient.fromConnectionString(
+      "DefaultEndpointsProtocol=https;AccountName=stttchattest;AccountKey=pkdIn3vaES75exyJgWRrjJJKWXZq3GKeJ4ZHfoPfsJfkg2Br1wduEZoEOmWQSmigVw1JLAfjH19i+ASt9LDvww==;EndpointSuffix=core.windows.net"
     );
 
     const containerClient = blobServiceClient.getContainerClient(containerName);
