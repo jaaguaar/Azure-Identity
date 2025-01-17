@@ -10,19 +10,21 @@ import { BlobServiceClient } from "@azure/storage-blob";
         "AZURE_CLIENT_ID is not set. Please set the environment variable with your Managed Identity Client ID."
       );
     }
+    const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+    if (!clientId) {
+      throw new Error("Connection string not provided");
+    }
 
     // Отримання токена доступу за допомогою User-Assigned Managed Identity
-    const credential = new DefaultAzureCredential({
-      managedIdentityClientId: clientId,
-    });
+    // const credential = new DefaultAzureCredential({
+    //   managedIdentityClientId: clientId,
+    // });
 
-    const accountName = "stttchattest";
+    // const accountName = "stttchattest";
     const containerName = "tt-chat-data-storage";
 
-    const blobServiceClient = new BlobServiceClient(
-      `https://${accountName}.blob.core.windows.net`,
-      credential
-    );
+    const blobServiceClient =
+      BlobServiceClient.fromConnectionString(connectionString);
 
     const containerClient = blobServiceClient.getContainerClient(containerName);
 
